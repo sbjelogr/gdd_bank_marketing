@@ -18,13 +18,24 @@ def abort_if_prediction_doesnt_exist(sample_uuid):
     if sample_uuid not in PREDICTIONS:
         abort(404, message="User {} doesn't exist".format(sample_uuid))
 
+def setup_arg_parsing():
+    predict_args = [
+        'age', 'job', 'marital', 'education',
+        'default', 'housing', 'loan', 'contact',
+        'month', 'day_of_week', 'duration',
+        'campaign', 'pdays', 'previous',
+        'poutcome', 'emp.var.rate', 'cons.price.idx',
+        'cons.conf.idx', 'euribor3m', 'nr.employed',
+        'sample_uuid'
+    ]
 
-parser = reqparse.RequestParser()
-parser.add_argument('uuid', required=True)
+    for argument in predict_args:
+        parser = reqparse.RequestParser()
+        parser.add_argument(argument, required = True)
 
+    return parser
 
-    #'age''job''marital''education''default''housing''loan''contact''month''day_of_week''duration''campaign''pdays''previous''poutcome''emp.var.rate''cons.price.idx''cons.conf.idx''euribor3m''nr.employed''sample_uuid'
-
+predict_arg_parser = setup_arg_parsing()
 
 class SimpleModel(Resource):
     """
@@ -35,7 +46,7 @@ class SimpleModel(Resource):
     #     return PREDICTIONS[sample_uuid]
 
     def get(self):
-        args = parser.parse_args()
+        args = predict_arg_parser.parse_args()
 
         response = {
             'sample_uuid': args['uuid'],
