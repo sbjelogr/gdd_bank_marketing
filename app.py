@@ -31,7 +31,7 @@ def setup_arg_parsing():
 
     for argument in predict_args:
         parser = reqparse.RequestParser()
-        parser.add_argument(argument, required = True)
+        parser.add_argument(argument)
 
     return parser
 
@@ -49,7 +49,7 @@ class SimpleModel(Resource):
         args = predict_arg_parser.parse_args()
 
         response = {
-            'sample_uuid': args['uuid'],
+            'sample_uuid': args['sample_uuid'],
             'probability':0.5,
             'label':1.0
         }
