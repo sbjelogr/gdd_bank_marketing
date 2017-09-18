@@ -1,9 +1,10 @@
 """
 Simple api to serve predictions.
 """
-from flask import Flask
+from flask import Flask, jsonify
 from flask_restful import reqparse, abort, Api, Resource
 import json
+import logging
 
 app = Flask(__name__)
 api = Api(app)
@@ -19,19 +20,29 @@ def abort_if_prediction_doesnt_exist(sample_uuid):
         abort(404, message="User {} doesn't exist".format(sample_uuid))
 
 def setup_arg_parsing():
-    predict_args = [
-        'age', 'job', 'marital', 'education',
+    args_str = [
+        'job', 'marital', 'education',
         'default', 'housing', 'loan', 'contact',
         'month', 'day_of_week', 'duration',
-        'campaign', 'pdays', 'previous',
-        'poutcome', 'emp.var.rate', 'cons.price.idx',
-        'cons.conf.idx', 'euribor3m', 'nr.employed',
-        'sample_uuid'
+        'poutcome', 'sample_uuid'
+    ]
+    args_int = [
+        'age', 'campaign', 'pdays', 'previous'
+    ]
+    args_float = [
+        'emp.var.rate', 'cons.price.idx',
+        'cons.conf.idx', 'euribor3m', 'nr.employed'
     ]
 
-    for argument in predict_args:
-        parser = reqparse.RequestParser()
+    parser = reqparse.RequestParser()
+    for argument in args_str:
         parser.add_argument(argument)
+    for argument in args_int:
+        parser.add_argument(argument, type=int)
+    for argument in args_float:
+        parser.add_argument(argument, type=float)
+
+    logging.debug('Set up argument parser.')
 
     return parser
 
@@ -41,19 +52,18 @@ class SimpleModel(Resource):
     """
     The resource we want to expose
     """
-    # def get(self, sample_uuid):
-    #     abort_if_prediction_doesnt_exist(sample_uuid)
-    #     return PREDICTIONS[sample_uuid]
 
     def get(self):
         args = predict_arg_parser.parse_args()
+
+        features = ['age', 'job']
 
         response = {
             'sample_uuid': args['sample_uuid'],
             'probability':0.5,
             'label':1.0
         }
-        return response
+        return jsonify(response)
 
 
 api.add_resource(SimpleModel, '/api/v1/predict')
