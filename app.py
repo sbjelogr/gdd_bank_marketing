@@ -72,7 +72,7 @@ class SimpleModel(Resource):
 
         response = {
             'sample_uuid': args['sample_uuid'],
-            'probability':model.predict_proba(X) ,
+            'probability':model.predict_proba(X)[1] ,
             'label':model.predict(X)
         }
         return jsonify(response)
