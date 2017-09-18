@@ -5,3 +5,5 @@ resources.md
 .cache/
 *.swp
 __pycache__/
+*/*.csv
+*/*.ipynb
