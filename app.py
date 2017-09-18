@@ -70,11 +70,18 @@ class SimpleModel(Resource):
         features = ['age','emp.var.rate']
         X =parse_dict(args,features)
 
+        label = model.predict(X)[0]
+        if label:
+            label = 0.
+        else:
+            label = 1.
+
         response = {
             'sample_uuid': args['sample_uuid'],
-            'probability':model.predict_proba(X)[1] ,
-            'label':model.predict(X)
+            'probability': float(model.predict_proba(X)[0,0]),
+            'label': label
         }
+
         return jsonify(response)
 
 
