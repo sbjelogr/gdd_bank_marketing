@@ -78,7 +78,7 @@ class SimpleModel(Resource):
 
         response = {
             'sample_uuid': args['sample_uuid'],
-            'probability': float(model.predict_proba(X)[0,0]),
+            'probability': float(model.predict_proba(X)[0,1]),
             'label': label
         }
 
