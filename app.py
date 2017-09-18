@@ -5,6 +5,8 @@ from flask import Flask, jsonify
 from flask_restful import reqparse, abort, Api, Resource
 import json
 import logging
+import joblib
+import pandas as pd
 
 app = Flask(__name__)
 api = Api(app)
@@ -18,6 +20,10 @@ with open('simple.json') as f:
 def abort_if_prediction_doesnt_exist(sample_uuid):
     if sample_uuid not in PREDICTIONS:
         abort(404, message="User {} doesn't exist".format(sample_uuid))
+
+def get_model():
+    model = joblib.load('model/logistic_model.pkl')
+    return model
 
 def setup_arg_parsing():
     args_str = [
@@ -46,7 +52,12 @@ def setup_arg_parsing():
 
     return parser
 
+def parse_dict(args_dict, features):
+    df = pd.DataFrame([args_dict])
+    return df[features]
+
 predict_arg_parser = setup_arg_parsing()
+model = get_model()
 
 class SimpleModel(Resource):
     """
