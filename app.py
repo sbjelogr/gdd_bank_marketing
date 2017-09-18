@@ -116,7 +116,9 @@ class SimpleModel(Resource):
 
         for feat in args_str:
             X[feat] = X[feat].map(
-                lambda old_val: label_encoder_dict[feat][old_val])
+                lambda old_val: label_encoder_dict[feat].get(old_val, -1))
+
+        X.fillna(0, inplace=True)
 
         proba = float(model.predict_proba(X)[0,1])
         label = 0.
