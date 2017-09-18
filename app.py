@@ -22,7 +22,7 @@ def abort_if_prediction_doesnt_exist(sample_uuid):
         abort(404, message="User {} doesn't exist".format(sample_uuid))
 
 def get_model():
-    model = joblib.load('model/rf_model_2.pkl')
+    model = joblib.load('model/rf_model_3.pkl')
     return model
 
 args_str = [
