@@ -1,4 +1,4 @@
-name: gdd_banking_marketing
+name: gdd_bank_marketing
 channels:
 - defaults
 - conda-forge
