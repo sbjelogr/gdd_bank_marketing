@@ -22,23 +22,24 @@ def abort_if_prediction_doesnt_exist(sample_uuid):
         abort(404, message="User {} doesn't exist".format(sample_uuid))
 
 def get_model():
-    model = joblib.load('model/logistic_model.pkl')
+    model = joblib.load('model/rf_model.pkl')
     return model
 
+args_str = [
+    'job', 'marital', 'education',
+    'default', 'housing', 'loan', 'contact',
+    'month', 'day_of_week', 'duration',
+    'poutcome', 'sample_uuid'
+]
+args_int = [
+    'age', 'campaign', 'pdays', 'previous'
+]
+args_float = [
+    'emp.var.rate', 'cons.price.idx',
+    'cons.conf.idx', 'euribor3m', 'nr.employed'
+]
+
 def setup_arg_parsing():
-    args_str = [
-        'job', 'marital', 'education',
-        'default', 'housing', 'loan', 'contact',
-        'month', 'day_of_week', 'duration',
-        'poutcome', 'sample_uuid'
-    ]
-    args_int = [
-        'age', 'campaign', 'pdays', 'previous'
-    ]
-    args_float = [
-        'emp.var.rate', 'cons.price.idx',
-        'cons.conf.idx', 'euribor3m', 'nr.employed'
-    ]
 
     parser = reqparse.RequestParser()
     for argument in args_str:
@@ -67,7 +68,7 @@ class SimpleModel(Resource):
     def get(self):
         args = predict_arg_parser.parse_args()
 
-        features = ['age','emp.var.rate']
+        features = args_int + args_float
         X = parse_dict(args,features)
 
         proba = float(model.predict_proba(X)[0,1])
