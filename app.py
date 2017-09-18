@@ -71,7 +71,7 @@ class SimpleModel(Resource):
         X =parse_dict(args,features)
 
         label = model.predict(X)[0]
-        if label:
+        if label == 1:
             label = 0.
         else:
             label = 1.
