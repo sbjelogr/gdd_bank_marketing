@@ -7,3 +7,4 @@ resources.md
 __pycache__/
 */*.csv
 */*.ipynb
+*.log

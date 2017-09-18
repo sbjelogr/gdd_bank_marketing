@@ -8,6 +8,8 @@ import logging
 import joblib
 import pandas as pd
 
+logging.basicConfig(filename='predict.log', level=logging.DEBUG)
+
 app = Flask(__name__)
 api = Api(app)
 
@@ -111,6 +113,8 @@ class SimpleModel(Resource):
     def get(self):
         args = predict_arg_parser.parse_args()
 
+        logging.info("\n Request: \n {}".format(args))
+
         features = args_str + args_int + args_float
         X = parse_dict(args,features)
 
@@ -130,6 +134,8 @@ class SimpleModel(Resource):
             'probability': proba,
             'label': label
         }
+
+        logging.info("Response: \n {}".format(response))
 
         return jsonify(response)
 
