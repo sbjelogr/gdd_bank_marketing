@@ -67,12 +67,13 @@ class SimpleModel(Resource):
     def get(self):
         args = predict_arg_parser.parse_args()
 
-        features = ['age', 'job']
+        features = ['age','emp.var.rate']
+        X =parse_dict(args,features)
 
         response = {
             'sample_uuid': args['sample_uuid'],
-            'probability':0.5,
-            'label':1.0
+            'probability':model.predict_proba(X) ,
+            'label':model.predict(X)
         }
         return jsonify(response)
 
