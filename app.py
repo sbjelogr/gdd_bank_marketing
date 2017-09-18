@@ -18,16 +18,34 @@ def abort_if_prediction_doesnt_exist(sample_uuid):
     if sample_uuid not in PREDICTIONS:
         abort(404, message="User {} doesn't exist".format(sample_uuid))
 
+
+parser = reqparse.RequestParser()
+parser.add_argument('uuid', required=True)
+
+
+    #'age''job''marital''education''default''housing''loan''contact''month''day_of_week''duration''campaign''pdays''previous''poutcome''emp.var.rate''cons.price.idx''cons.conf.idx''euribor3m''nr.employed''sample_uuid'
+
+
 class SimpleModel(Resource):
     """
     The resource we want to expose
     """
-    def get(self, sample_uuid):
-        abort_if_prediction_doesnt_exist(sample_uuid)
-        return PREDICTIONS[sample_uuid]
+    # def get(self, sample_uuid):
+    #     abort_if_prediction_doesnt_exist(sample_uuid)
+    #     return PREDICTIONS[sample_uuid]
+
+    def get(self):
+        args = parser.parse_args()
+
+        response = {
+            'sample_uuid': args['uuid'],
+            'probability':0.5,
+            'label':1.0
+        }
+        return response
 
 
-api.add_resource(SimpleModel, '/predict/<sample_uuid>')
+api.add_resource(SimpleModel, '/api/v1/predict')
 
 if __name__ == '__main__':
      app.run(host="0.0.0.0", port=5000, debug=True)
