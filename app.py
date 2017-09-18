@@ -68,17 +68,16 @@ class SimpleModel(Resource):
         args = predict_arg_parser.parse_args()
 
         features = ['age','emp.var.rate']
-        X =parse_dict(args,features)
+        X = parse_dict(args,features)
 
-        label = model.predict(X)[0]
-        if label == 1:
-            label = 0.
-        else:
+        proba = float(model.predict_proba(X)[0,1])
+        label = 0.
+        if proba > 0.5:
             label = 1.
 
         response = {
             'sample_uuid': args['sample_uuid'],
-            'probability': float(model.predict_proba(X)[0,1]),
+            'probability': proba,
             'label': label
         }
 

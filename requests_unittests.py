@@ -29,7 +29,7 @@ class TestRequests(unittest.TestCase):
         self.assertEqual(sorted(result.keys()),
                          sorted(['label', 'probability', 'sample_uuid']))
         self.assertIsInstance(result['label'], float)
-        self.assertTrue(result['label'], [0., 1.])
+        self.assertIn(result['label'], [0., 1.])
         self.assertIsInstance(result['probability'], float)
         self.assertTrue(0 <= result['probability'] <= 1)
 
