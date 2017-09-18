@@ -122,9 +122,13 @@ class SimpleModel(Resource):
             X[feat] = X[feat].map(
                 lambda old_val: label_encoder_dict[feat].get(old_val, 0))
 
-        X.fillna(0, inplace=True)
+        try:
+            proba = float(model.predict_proba(X)[0,1])
+        except:
+            logging.info("MISSING VALUES")
+            X.fillna(0, inplace=True)
+            proba = float(model.predict_proba(X)[0,1])
 
-        proba = float(model.predict_proba(X)[0,1])
         label = 0.
         if proba > 0.5:
             label = 1.
