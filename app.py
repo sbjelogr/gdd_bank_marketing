@@ -105,8 +105,21 @@ def parse_dict(args_dict, features):
     df = pd.DataFrame([args_dict])
     return df[features]
 
+def label_from_proba(proba, threshold=0.5):
+    label = 0.
+    if proba > threshold:
+        label = 1.
+    return label
+
+def label_encode(df, features, label_dict, default_val=0):
+    for feat in features:
+        df[feat] = df[feat].map(
+            lambda old_val: label_dict[feat].get(old_val, default_val))
+    return df
+
 predict_arg_parser = setup_arg_parsing()
 model = get_model()
+features = args_int + args_float + args_str
 
 class SimpleModel(Resource):
     """
@@ -114,32 +127,25 @@ class SimpleModel(Resource):
     """
 
     def get(self):
-        args = predict_arg_parser.parse_args()
+        request_args = predict_arg_parser.parse_args()
 
-        logging.info("\n Request: \n {}".format(args))
+        logging.info("\n Request: \n {}".format(request_args))
 
-        features = args_int + args_float + args_str
-        X = parse_dict(args,features)
-
-        for feat in args_str:
-            X[feat] = X[feat].map(
-                lambda old_val: label_encoder_dict[feat].get(old_val, 0))
+        df = parse_dict(request_args, features)
+        df = label_encode(df, args_str, label_encoder_dict)
 
         try:
-            proba = float(model.predict_proba(X)[0,1])
-        except:
-            logging.info("MISSING VALUES")
-            X.fillna(0, inplace=True)
-            proba = float(model.predict_proba(X)[0,1])
-
-        label = 0.
-        if proba > 0.5:
-            label = 1.
+            proba = float(model.predict_proba(df)[0,1])
+        except ValueError:
+            # TODO Add Exception to logs
+            logging.warning("MISSING VALUES")
+            df.fillna(0, inplace=True)
+            proba = float(model.predict_proba(df)[0,1])
 
         response = {
-            'sample_uuid': args['sample_uuid'],
+            'sample_uuid': request_args['sample_uuid'],
             'probability': proba,
-            'label': label
+            'label': label_from_proba(proba)
         }
 
         logging.info("Response: \n {}".format(response))
