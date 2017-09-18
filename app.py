@@ -22,17 +22,16 @@ def abort_if_prediction_doesnt_exist(sample_uuid):
         abort(404, message="User {} doesn't exist".format(sample_uuid))
 
 def get_model():
-    model = joblib.load('model/rf_model.pkl')
+    model = joblib.load('model/rf_model_2.pkl')
     return model
 
 args_str = [
     'job', 'marital', 'education',
     'default', 'housing', 'loan', 'contact',
-    'month', 'day_of_week', 'duration',
-    'poutcome', 'sample_uuid'
+    'month', 'day_of_week', 'poutcome'
 ]
 args_int = [
-    'age', 'campaign', 'pdays', 'previous'
+    'age', 'campaign', 'pdays', 'previous', 'duration'
 ]
 args_float = [
     'emp.var.rate', 'cons.price.idx',
@@ -42,6 +41,9 @@ args_float = [
 def setup_arg_parsing():
 
     parser = reqparse.RequestParser()
+
+    parser.add_argument('sample_uuid')
+
     for argument in args_str:
         parser.add_argument(argument)
     for argument in args_int:
